@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.thiagocontelli.infinitescrollexample.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -36,8 +38,14 @@ class HomeFragment : Fragment() {
 
         preparePostsRecyclerView()
 
+        loadPosts(0)
+
+        onReachLastElement()
+    }
+
+    private fun loadPosts(skip: Int) {
         lifecycleScope.launch {
-            viewModel.getAllPosts().collect {
+            viewModel.getAllPosts(skip).collect {
                 postsAdapter.setPosts(it)
             }
         }
@@ -48,5 +56,25 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             adapter = postsAdapter
         }
+    }
+
+    private fun onReachLastElement() {
+        binding.postsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            var skip = 0
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+                if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == linearLayoutManager.itemCount - 1) {
+                    if (skip + 30 < viewModel.totalPosts.value!!) {
+                        skip += 30
+                        loadPosts(skip)
+                    } else {
+                        Toast.makeText(context, "The list is over", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
     }
 }

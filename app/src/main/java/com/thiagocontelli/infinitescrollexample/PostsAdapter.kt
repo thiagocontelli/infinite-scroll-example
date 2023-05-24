@@ -10,7 +10,7 @@ class PostsAdapter : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>() {
     private var posts: List<Post> = emptyList()
 
     fun setPosts(posts: List<Post>) {
-        this.posts = posts
+        this.posts += posts
         notifyDataSetChanged()
     }
 
@@ -23,8 +23,9 @@ class PostsAdapter : RecyclerView.Adapter<PostsAdapter.PostsViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: PostsViewHolder, position: Int) {
-        holder.binding.titleTextView.text = posts[position].title
-        holder.binding.bodyTextView.text = posts[position].body
+        val post = posts[position]
+        holder.binding.titleTextView.text = post.title
+        holder.binding.bodyTextView.text = post.body
     }
 
     override fun getItemCount(): Int {
