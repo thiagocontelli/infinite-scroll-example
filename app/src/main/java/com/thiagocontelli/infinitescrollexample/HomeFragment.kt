@@ -44,9 +44,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadPosts(skip: Int) {
+        binding.progressCircular.visibility = View.VISIBLE
         lifecycleScope.launch {
             viewModel.getAllPosts(skip).collect {
                 postsAdapter.setPosts(it)
+                binding.progressCircular.visibility = View.GONE
             }
         }
     }
