@@ -1,5 +1,7 @@
 package com.thiagocontelli.infinitescrollexample
 
+import kotlinx.coroutines.flow.Flow
+
 interface PostRepository {
-    fun getAllPosts(): List<Post>
+    fun getAllPosts(): Flow<List<Post>>
 }
